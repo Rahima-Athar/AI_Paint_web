@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="1000" height="650">
+  <defs>
+    <linearGradient id="bed-wall-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EBE5DC" />
+      <stop offset="100%" stop-color="#D7CFBE" />
+    </linearGradient>
+    <linearGradient id="bed-floor-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8C705D" />
+      <stop offset="100%" stop-color="#5E4738" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ceiling -->
+  <polygon points="0,0 1000,0 880,80 120,80" fill="#FBF8F4" />
+  <!-- Left Wall -->
+  <polygon points="0,0 120,80 120,510 0,600" fill="#CEC3B4" />
+  <!-- Right Wall -->
+  <polygon points="1000,0 880,80 880,510 1000,600" fill="#D3C8BA" />
+  <!-- Back Architectural Wall -->
+  <rect x="120" y="80" width="760" height="430" fill="url(#bed-wall-grad)" />
+
+  <!-- Crown Molding -->
+  <rect x="120" y="80" width="760" height="14" fill="#FAF6F0" />
+  <!-- Wall Wainscoting frames -->
+  <rect x="160" y="120" width="160" height="260" fill="none" stroke="#FAF6F0" stroke-width="3" rx="2" />
+  <rect x="360" y="110" width="280" height="180" fill="none" stroke="#FAF6F0" stroke-width="3" rx="2" />
+  <rect x="680" y="120" width="160" height="260" fill="none" stroke="#FAF6F0" stroke-width="3" rx="2" />
+
+  <!-- Sconces on Wall -->
+  <circle cx="240" cy="200" r="14" fill="#C3A77D" />
+  <circle cx="240" cy="200" r="30" fill="#FFF4D4" opacity="0.3" />
+  <circle cx="760" cy="200" r="14" fill="#C3A77D" />
+  <circle cx="760" cy="200" r="30" fill="#FFF4D4" opacity="0.3" />
+
+  <!-- Floor -->
+  <polygon points="0,600 120,510 880,510 1000,600 1000,650 0,650" fill="url(#bed-floor-grad)" />
+
+  <!-- Luxury King Bed with Upholstered Headboard -->
+  <rect x="280" y="270" width="440" height="170" rx="14" fill="#D8CFBF" stroke="#C3A77D" stroke-width="4" />
+  <!-- Bed Mattress & Linens -->
+  <rect x="250" y="400" width="500" height="150" rx="10" fill="#F5F2ED" stroke="#E0DDD6" stroke-width="2" />
+  <!-- Pillows -->
+  <rect x="290" y="370" width="110" height="50" rx="8" fill="#FFFFFF" stroke="#E6E2DB" />
+  <rect x="420" y="370" width="110" height="50" rx="8" fill="#FFFFFF" stroke="#E6E2DB" />
+  <rect x="550" y="370" width="110" height="50" rx="8" fill="#FFFFFF" stroke="#E6E2DB" />
+  <!-- Throw Blanket -->
+  <path d="M250 470 C 400 485, 600 460, 750 480 L750 550 L250 550 Z" fill="#74608F" opacity="0.85" />
+
+  <!-- Nightstands -->
+  <rect x="150" y="440" width="80" height="80" rx="4" fill="#3B2E24" />
+  <rect x="770" y="440" width="80" height="80" rx="4" fill="#3B2E24" />
+</svg>
+

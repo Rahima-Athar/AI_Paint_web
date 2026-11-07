@@ -1,0 +1,25 @@
+{
+  "name": "wallora-ai",
+  "version": "1.0.0",
+  "description": "Wallora AI - Luxury Architectural Room Paint Visualizer",
+  "main": "script.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "wallora-ai",
+    "paint-visualizer",
+    "interior-design",
+    "lavender-dream",
+    "matter-js",
+    "anti-gravity"
+  ],
+  "author": "Wallora AI Architectural Team",
+  "license": "MIT",
+  "dependencies": {
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

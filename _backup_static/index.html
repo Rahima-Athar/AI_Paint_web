@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallora AI — Luxury Architectural Room Paint Visualizer</title>
+  <meta name="description" content="Preview curated luxury paint palettes on your room walls with architectural precision, physics-based color exploration, and dynamic triple-lighting simulation.">
+  
+  <!-- Google Fonts: Playfair Display (Luxury Editorial Serif) & Poppins (Crisp Sans-Serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons for crisp UI symbols -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Supabase JS Client (CDN) — must load BEFORE supabase-client.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Matter.js for Floating Anti-Gravity Physics Swatch Visualizer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <!-- Canvas Confetti for Design Save celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- Main Luxury Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-warm-cream text-charcoal font-sans antialiased selection:bg-royal-lavender selection:text-white">
+
+  <!-- ==================== TOP NAVIGATION ==================== -->
+  <header class="navbar" id="main-navbar">
+    <div class="nav-container">
+      <!-- Brand Logo / Wordmark -->
+      <a href="#landing" class="brand-logo" id="nav-brand-btn" aria-label="Wallora AI Home">
+        <div class="brand-icon">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7">
+            <rect width="32" height="32" rx="8" fill="url(#brand-grad)" />
+            <path d="M7 23L16 9L25 23H20L16 16.5L12 23H7Z" fill="#F7F0EB" />
+            <circle cx="16" cy="13" r="2.2" fill="#C3A77D" />
+            <defs>
+              <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#74608F" />
+                <stop offset="0.6" stop-color="#55446D" />
+                <stop offset="1" stop-color="#3B2A52" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">WALLORA<span class="brand-accent">AI</span></span>
+          <span class="brand-sub">Lavender Dream Edition</span>
+        </div>
+      </a>
+
+      <!-- Primary Navigation Links -->
+      <nav class="nav-links" id="desktop-nav">
+        <button type="button" class="nav-link active" data-view="landing" id="nav-home">
+          <i class="fa-solid fa-compass"></i> Discover
+        </button>
+        <button type="button" class="nav-link" data-view="studio" id="nav-studio">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Design Studio
+        </button>
+        <button type="button" class="nav-link" data-view="library" id="nav-library">
+          <i class="fa-solid fa-palette"></i> Color Library
+        </button>
+        <button type="button" class="nav-link" data-view="designs" id="nav-designs">
+          <i class="fa-solid fa-bookmark"></i> My Designs
+          <span class="badge-count" id="nav-saved-count">0</span>
+        </button>
+      </nav>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Sound FX Toggle Button -->
+        <button type="button" class="btn-icon" id="sound-toggle-btn" title="Toggle Spatial Luxury Audio">
+          <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+        </button>
+
+        <!-- Settings / Provider Status Trigger -->
+        <button type="button" class="btn-icon" id="open-settings-btn" title="Settings & AI Provider">
+          <i class="fa-solid fa-sliders"></i>
+          <span class="status-indicator-dot online" id="global-status-dot" title="Demo Studio Ready"></span>
+        </button>
+
+        <!-- Primary Studio CTA -->
+        <button type="button" class="btn-luxury-primary" id="start-visualizing-btn">
+          <span>Visualize My Room</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button type="button" class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Navigation">
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="mobile-drawer" id="mobile-drawer">
+      <div class="drawer-content">
+        <button type="button" class="drawer-link active" data-view="landing">
+          <i class="fa-solid fa-compass"></i> Discover
+        </button>
+        <button type="button" class="drawer-link" data-view="studio">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Design Studio
+        </button>
+        <button type="button" class="drawer-link" data-view="library">
+          <i class="fa-solid fa-palette"></i> Color Library
+        </button>
+        <button type="button" class="drawer-link" data-view="designs">
+          <i class="fa-solid fa-bookmark"></i> My Designs
+        </button>
+        <button type="button" class="drawer-link" id="mobile-settings-btn">
+          <i class="fa-solid fa-sliders"></i> System Settings & API
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT CONTAINERS ==================== -->
+  <main id="app-container" class="main-content">
+
+    <!-- ==================== VIEW 1: LANDING PAGE ==================== -->
+    <section id="view-landing" class="app-view active-view">
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <div class="hero-bg-glow"></div>
+        <div class="container hero-container">
+          <div class="hero-copy">
+            <div class="luxury-pill">
+              <span class="gold-sparkle"><i class="fa-solid fa-sparkles"></i></span>
+              <span>Next-Gen Architectural AI Paint Selector</span>
+            </div>
+            <h1 class="hero-title">
+              Your Space, <br>
+              <span class="serif-italic luxury-gradient-text">Your Colors,</span> <br>
+              Your Imagination.
+            </h1>
+            <p class="hero-description">
+              Wallora AI empowers homeowners, architects, and luxury interior designers to preview curated wall paint collections in their actual living spaces. Preserve architectural depth, natural molding shadows, and lighting nuances.
+            </p>
+            <div class="hero-cta-group">
+              <button type="button" class="btn-luxury-primary btn-large" id="hero-cta-btn">
+                <span>Enter Studio & Visualize</span>
+                <i class="fa-solid fa-wand-sparkles"></i>
+              </button>
+              <button type="button" class="btn-luxury-secondary btn-large" id="hero-browse-palettes">
+                <span>Explore Palettes</span>
+                <i class="fa-solid fa-swatchbook"></i>
+              </button>
+            </div>
+
+            <!-- Trust Bar / Key Proof Points -->
+            <div class="trust-metrics">
+              <div class="metric-item">
+                <span class="metric-num">LRV 99%</span>
+                <span class="metric-label">Accurate Light Reflectance</span>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="metric-item">
+                <span class="metric-num">3 Angles</span>
+                <span class="metric-label">Triple Lighting Simulation</span>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="metric-item">
+                <span class="metric-num">Physics</span>
+                <span class="metric-label">Anti-Gravity Swatches</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Visualizer Teaser (Interactive Before/After Card) -->
+          <div class="hero-visual">
+            <div class="luxury-card hero-preview-card">
+              <div class="hero-card-header">
+                <div class="window-dots">
+                  <span class="dot red"></span>
+                  <span class="dot yellow"></span>
+                  <span class="dot green"></span>
+                </div>
+                <div class="hero-card-title">Nordic Salon • Lavender Dream Preview</div>
+                <div class="hero-card-badge">Live Interactive</div>
+              </div>
+
+              <!-- Interactive Split Comparison Demo -->
+              <div class="hero-comparison-wrapper" id="hero-demo-comparison">
+                <div class="hero-img-layer hero-img-after">
+                  <img src="assets/presets/room_living_after.svg" alt="Recolored Room in Royal Lavender" class="room-preview-img" id="hero-after-img">
+                  <div class="layer-pill after-pill">Royal Lavender #74608F</div>
+                </div>
+                <div class="hero-img-layer hero-img-before" id="hero-before-layer">
+                  <img src="assets/presets/room_living_before.svg" alt="Original Room Photo" class="room-preview-img" id="hero-before-img">
+                  <div class="layer-pill before-pill">Original Wall Paint</div>
+                </div>
+                <!-- Interactive slider line -->
+                <div class="hero-slider-divider" id="hero-slider-divider">
+                  <div class="hero-slider-thumb">
+                    <i class="fa-solid fa-arrows-left-right"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-card-footer">
+                <div class="hero-swatch-strip">
+                  <span class="mini-swatch" style="background-color: #74608F;" title="Royal Lavender"></span>
+                  <span class="mini-swatch" style="background-color: #B7A1CF;" title="Soft Lilac"></span>
+                  <span class="mini-swatch" style="background-color: #D9B8CE;" title="Dusty Rose"></span>
+                  <span class="mini-swatch" style="background-color: #E9D9E9;" title="Blush Pink"></span>
+                  <span class="mini-swatch" style="background-color: #C3A77D;" title="Soft Gold"></span>
+                </div>
+                <div class="hero-card-hint">
+                  <i class="fa-regular fa-hand-pointer"></i> Drag slider to compare paint tones
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works Section -->
+      <section class="section how-it-works-section">
+        <div class="container">
+          <div class="section-header text-center">
+            <span class="section-tag">Seamless 3-Step Journey</span>
+            <h2 class="section-title">From Concept to Architectural Reality</h2>
+            <p class="section-subtitle">A bespoke, non-destructive workflow engineered to help you choose with confidence.</p>
+          </div>
+
+          <div class="steps-grid">
+            <div class="step-card luxury-card">
+              <div class="step-num">01</div>
+              <div class="step-icon-wrap">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+              </div>
+              <h3 class="step-title">Upload Room Photography</h3>
+              <p class="step-desc">Drop your living room, bedroom, or study photo. Select your architectural room type for boundary intelligence.</p>
+            </div>
+
+            <div class="step-card luxury-card">
+              <div class="step-num">02</div>
+              <div class="step-icon-wrap">
+                <i class="fa-solid fa-palette"></i>
+              </div>
+              <h3 class="step-title">Curate Palette & Mood</h3>
+              <p class="step-desc">Explore floating anti-gravity swatches, bespoke luxury palettes, and professional paint specs with true LRV metrics.</p>
+            </div>
+
+            <div class="step-card luxury-card">
+              <div class="step-num">03</div>
+              <div class="step-icon-wrap">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <h3 class="step-title">Simulate & Compare</h3>
+              <p class="step-desc">Preview colors under Morning Sun, Warm Evening, and Studio Neutral light. Drag comparison sliders and download design decks.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Signature Lavender Dream Brand Palette Showcase -->
+      <section class="section brand-palette-section">
+        <div class="container">
+          <div class="section-header text-center">
+            <span class="section-tag">Signature Design Direction</span>
+            <h2 class="section-title">The Lavender Dream Collection</h2>
+            <p class="section-subtitle">An exquisite dialogue between calming lilac hues, gentle blush undertones, and warm brushed brass.</p>
+          </div>
+
+          <div class="palette-showcase-grid">
+            <!-- Swatch 1 -->
+            <div class="luxury-swatch-card" data-hex="#74608F" data-name="Royal Lavender">
+              <div class="swatch-color-box" style="background-color: #74608F;">
+                <span class="swatch-tag">Primary Brand</span>
+              </div>
+              <div class="swatch-info">
+                <h4 class="swatch-name">Royal Lavender</h4>
+                <div class="swatch-specs">
+                  <span>HEX: #74608F</span>
+                  <span>LRV: 28%</span>
+                </div>
+                <p class="swatch-desc">Noble, introspective depth for feature walls and statement spaces.</p>
+                <button type="button" class="btn-swatch-action apply-swatch-btn" data-hex="#74608F" data-name="Royal Lavender">Apply in Studio</button>
+              </div>
+            </div>
+
+            <!-- Swatch 2 -->
+            <div class="luxury-swatch-card" data-hex="#B7A1CF" data-name="Soft Lilac">
+              <div class="swatch-color-box" style="background-color: #B7A1CF;">
+                <span class="swatch-tag">Highlight</span>
+              </div>
+              <div class="swatch-info">
+                <h4 class="swatch-name">Soft Lilac</h4>
+                <div class="swatch-specs">
+                  <span>HEX: #B7A1CF</span>
+                  <span>LRV: 52%</span>
+                </div>
+                <p class="swatch-desc">Airy, meditative ambiance ideal for bedrooms and reading retreats.</p>
+                <button type="button" class="btn-swatch-action apply-swatch-btn" data-hex="#B7A1CF" data-name="Soft Lilac">Apply in Studio</button>
+              </div>
+            </div>
+
+            <!-- Swatch 3 -->
+            <div class="luxury-swatch-card" data-hex="#D9B8CE" data-name="Dusty Rose">
+              <div class="swatch-color-box" style="background-color: #D9B8CE;">
+                <span class="swatch-tag">Warm Accent</span>
+              </div>
+              <div class="swatch-info">
+                <h4 class="swatch-name">Dusty Rose</h4>
+                <div class="swatch-specs">
+                  <span>HEX: #D9B8CE</span>
+                  <span>LRV: 61%</span>
+                </div>
+                <p class="swatch-desc">Warm, romantic undertones that soften harsh daylight into golden glow.</p>
+                <button type="button" class="btn-swatch-action apply-swatch-btn" data-hex="#D9B8CE" data-name="Dusty Rose">Apply in Studio</button>
+              </div>
+            </div>
+
+            <!-- Swatch 4 -->
+            <div class="luxury-swatch-card" data-hex="#E9D9E9" data-name="Blush Pink">
+              <div class="swatch-color-box" style="background-color: #E9D9E9;">
+                <span class="swatch-tag">Soft Surface</span>
+              </div>
+              <div class="swatch-info">
+                <h4 class="swatch-name">Blush Pink</h4>
+                <div class="swatch-specs">
+                  <span>HEX: #E9D9E9</span>
+                  <span>LRV: 78%</span>
+                </div>
+                <p class="swatch-desc">Delicate, luminous backdrop that expands visual space and serenity.</p>
+                <button type="button" class="btn-swatch-action apply-swatch-btn" data-hex="#E9D9E9" data-name="Blush Pink">Apply in Studio</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="section faq-section">
+        <div class="container max-w-4xl">
+          <div class="section-header text-center">
+            <span class="section-tag">Architectural Intelligence</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+          </div>
+
+          <div class="faq-list">
+            <details class="faq-item luxury-card" open>
+              <summary class="faq-question">
+                <span>How does Wallora AI preserve room details and furniture?</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </summary>
+              <div class="faq-answer">
+                <p>Unlike simplistic photo filters that tint everything, Wallora AI isolates wall planes through edge luminosity segmentation. Furniture textures, natural window sunlight beams, molding trim, and cast shadows remain undisturbed for an authentic paint preview.</p>
+              </div>
+            </details>
+
+            <details class="faq-item luxury-card">
+              <summary class="faq-question">
+                <span>What is LRV and why does it matter?</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </summary>
+              <div class="faq-answer">
+                <p>LRV stands for <strong>Light Reflectance Value</strong>, measured on a scale from 0% (pure black absorbing all light) to 100% (pure reflective white). High-LRV shades (60–80%) brighten dim northern-facing rooms, while lower LRVs (20–40%) create intimate, moody luxury sanctuaries.</p>
+              </div>
+            </details>
+
+            <details class="faq-item luxury-card">
+              <summary class="faq-question">
+                <span>What is the difference between Demo Mode and AI Inpainting Provider?</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </summary>
+              <div class="faq-answer">
+                <p>Wallora AI strictly adheres to engineering honesty. In Demo Mode, an ultra-fast client-side luminance-preserving shader delivers real-time previews. When connected to a backend inpainting API (e.g. Replicate or Stability AI via Supabase), full generative boundary inpainting takes place.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- Editorial Footer -->
+      <footer class="footer">
+        <div class="container footer-container">
+          <div class="footer-brand">
+            <div class="brand-logo">
+              <div class="brand-text">
+                <span class="brand-name">WALLORA<span class="brand-accent">AI</span></span>
+                <span class="brand-sub">Lavender Dream • Architectural Studio</span>
+              </div>
+            </div>
+            <p class="footer-tagline">Your Space, Your Colors, Your Imagination.</p>
+            <p class="footer-disclaimer">
+              Generated previews are artistic approximations. Surface condition, primer coat, and natural sunlight will affect physical paint batches. We recommend ordering sample pots before full application.
+            </p>
+          </div>
+          <div class="footer-links-group">
+            <h4>Studio Navigation</h4>
+            <ul>
+              <li><a href="#" class="footer-link" data-view="landing">Home</a></li>
+              <li><a href="#" class="footer-link" data-view="studio">Design Studio</a></li>
+              <li><a href="#" class="footer-link" data-view="library">Color Library</a></li>
+              <li><a href="#" class="footer-link" data-view="designs">My Saved Projects</a></li>
+            </ul>
+          </div>
+          <div class="footer-links-group">
+            <h4>Specifications</h4>
+            <ul>
+              <li><span>Palette: Lavender Dream</span></li>
+              <li><span>Engine: Luminance Shading</span></li>
+              <li><span>Lighting: 2700K / 4000K / 5500K</span></li>
+              <li><span>Precision: Delta-E &lt; 1.0 (8K)</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom text-center">
+          <p>© 2026 Wallora AI. Engineered with luxury precision for architectural interior exploration.</p>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ==================== VIEW 2: DESIGN STUDIO (MULTI-STEP) ==================== -->
+    <section id="view-studio" class="app-view">
+      <div class="container studio-container">
+        
+        <!-- Studio Header & Step Indicator -->
+        <div class="studio-header-wrap">
+          <div class="studio-headline">
+            <span class="luxury-badge"><i class="fa-solid fa-sparkles"></i> Wallora Studio</span>
+            <h2 class="studio-title" id="studio-step-heading">Step 1: Upload Room Photography</h2>
+            <p class="studio-subtitle" id="studio-step-subtext">Drop your space photo or select one of our curated architectural rooms.</p>
+          </div>
+
+          <!-- Stepper Navigation -->
+          <div class="stepper-nav">
+            <button type="button" class="step-nav-btn active" data-step="1" id="step-btn-1">
+              <span class="step-indicator">1</span>
+              <span class="step-name">Room Upload</span>
+            </button>
+            <div class="step-connector" id="connector-1"></div>
+            <button type="button" class="step-nav-btn" data-step="2" id="step-btn-2">
+              <span class="step-indicator">2</span>
+              <span class="step-name">Curate Colors</span>
+            </button>
+            <div class="step-connector" id="connector-2"></div>
+            <button type="button" class="step-nav-btn" data-step="3" id="step-btn-3">
+              <span class="step-indicator">3</span>
+              <span class="step-name">AI Visualizer</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ================= STEP 1: ROOM UPLOAD ================= -->
+        <div class="studio-step-panel active-step" id="step-panel-1">
+          <div class="upload-grid">
+            <!-- Left: Dropzone & File Selector -->
+            <div class="upload-box-card luxury-card">
+              <div class="dropzone-area" id="room-dropzone">
+                <input type="file" id="room-file-input" accept="image/jpeg,image/png,image/webp" class="hidden-file-input">
+                <div class="dropzone-content" id="dropzone-empty-state">
+                  <div class="dropzone-icon">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                  </div>
+                  <h3 class="dropzone-title">Drag & Drop Room Photo Here</h3>
+                  <p class="dropzone-sub">Supports JPEG, PNG, and WebP (up to 10 MB)</p>
+                  <button type="button" class="btn-luxury-secondary mt-3" id="browse-files-btn">
+                    <i class="fa-regular fa-folder-open"></i> Browse Room Photos
+                  </button>
+                </div>
+
+                <!-- Active Upload Preview state (hidden by default) -->
+                <div class="dropzone-preview-state hidden" id="dropzone-preview-state">
+                  <img src="" alt="Uploaded Room Preview" id="upload-preview-img" class="upload-preview-img">
+                  <div class="preview-overlay-actions">
+                    <button type="button" class="btn-pill-action" id="replace-upload-btn">
+                      <i class="fa-solid fa-arrow-rotate-right"></i> Change Photo
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Room Type Selection -->
+              <div class="room-type-picker mt-6">
+                <label class="picker-label"><i class="fa-solid fa-house-chimney-window"></i> Select Room Architecture:</label>
+                <div class="room-type-chips" id="room-type-chips">
+                  <button type="button" class="chip active" data-room-type="Living Room">Living Room</button>
+                  <button type="button" class="chip" data-room-type="Master Bedroom">Bedroom</button>
+                  <button type="button" class="chip" data-room-type="Dining Room">Dining Room</button>
+                  <button type="button" class="chip" data-room-type="Kitchen">Kitchen</button>
+                  <button type="button" class="chip" data-room-type="Study">Study / Office</button>
+                  <button type="button" class="chip" data-room-type="Other">Other</button>
+                </div>
+              </div>
+
+              <!-- Upload Guidelines Note -->
+              <div class="upload-guidance-callout mt-5">
+                <div class="callout-icon"><i class="fa-solid fa-circle-info"></i></div>
+                <div class="callout-text">
+                  <strong>Architectural Photo Best Practice:</strong>
+                  <span>Use well-lit photographs showing clear wall boundaries. Avoid extreme fish-eye distortions for optimal inpainting precision.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Architectural Room Presets (Instant Testing) -->
+            <div class="preset-rooms-card luxury-card">
+              <div class="card-header-sub">
+                <h3>Or Choose a Curated Architectural Preset</h3>
+                <p>Test Wallora AI instantly with high-resolution interior photography.</p>
+              </div>
+
+              <div class="preset-rooms-grid">
+                <!-- Preset 1 -->
+                <div class="preset-room-card active" data-preset-id="living" data-room-type="Living Room" data-preset-name="Nordic Living Salon">
+                  <div class="preset-thumbnail">
+                    <img src="assets/presets/room_living_before.svg" alt="Nordic Living Salon">
+                    <span class="preset-badge">Living Room</span>
+                  </div>
+                  <div class="preset-meta">
+                    <h4>Nordic Living Salon</h4>
+                    <p>Natural morning light with high ceilings and crown moldings.</p>
+                  </div>
+                </div>
+
+                <!-- Preset 2 -->
+                <div class="preset-room-card" data-preset-id="bedroom" data-room-type="Master Bedroom" data-preset-name="Parisian Master Suite">
+                  <div class="preset-thumbnail">
+                    <img src="assets/presets/room_bedroom_before.svg" alt="Parisian Master Suite">
+                    <span class="preset-badge">Bedroom</span>
+                  </div>
+                  <div class="preset-meta">
+                    <h4>Parisian Master Suite</h4>
+                    <p>Soft wainscoting paneling and warm ambient side illumination.</p>
+                  </div>
+                </div>
+
+                <!-- Preset 3 -->
+                <div class="preset-room-card" data-preset-id="dining" data-room-type="Dining Room" data-preset-name="Minimalist Dining Hall">
+                  <div class="preset-thumbnail">
+                    <img src="assets/presets/room_dining_before.svg" alt="Minimalist Dining Hall">
+                    <span class="preset-badge">Dining</span>
+                  </div>
+                  <div class="preset-meta">
+                    <h4>Minimalist Dining Hall</h4>
+                    <p>Clean modern lines and expansive architectural plaster surfaces.</p>
+                  </div>
+                </div>
+
+                <!-- Preset 4 -->
+                <div class="preset-room-card" data-preset-id="study" data-room-type="Study" data-preset-name="Warm Oak Library">
+                  <div class="preset-thumbnail">
+                    <img src="assets/presets/room_study_before.svg" alt="Warm Oak Library">
+                    <span class="preset-badge">Study</span>
+                  </div>
+                  <div class="preset-meta">
+                    <h4>Warm Oak Library</h4>
+                    <p>Subtle wood accents demanding deep, focused wall tones.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Proceed CTA Button -->
+              <div class="step-action-bar mt-6">
+                <button type="button" class="btn-luxury-primary w-full" id="confirm-upload-btn">
+                  <span>Continue to Color Selection</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 2: COLOR SELECTION & ANTI-GRAVITY SWATCHES ================= -->
+        <div class="studio-step-panel hidden" id="step-panel-2">
+          
+          <!-- Mood Selection & Category Filter Header -->
+          <div class="color-controls-bar luxury-card">
+            <!-- Mood selector -->
+            <div class="control-group">
+              <label class="control-label"><i class="fa-solid fa-sparkles"></i> Interior Design Mood:</label>
+              <div class="pill-group" id="mood-pill-group">
+                <button type="button" class="mood-pill active" data-mood="Luxury">
+                  <i class="fa-solid fa-crown"></i> Luxury
+                </button>
+                <button type="button" class="mood-pill" data-mood="Calm">
+                  <i class="fa-solid fa-feather"></i> Calm
+                </button>
+                <button type="button" class="mood-pill" data-mood="Cozy">
+                  <i class="fa-solid fa-mug-hot"></i> Cozy
+                </button>
+                <button type="button" class="mood-pill" data-mood="Modern">
+                  <i class="fa-solid fa-cube"></i> Modern
+                </button>
+              </div>
+            </div>
+
+            <!-- Palette Category Filter -->
+            <div class="control-group">
+              <label class="control-label"><i class="fa-solid fa-filter"></i> Color Family:</label>
+              <div class="pill-group" id="family-pill-group">
+                <button type="button" class="family-pill active" data-category="All">All</button>
+                <button type="button" class="family-pill" data-category="Pastel">Pastel</button>
+                <button type="button" class="family-pill" data-category="Warm">Warm</button>
+                <button type="button" class="family-pill" data-category="Cool">Cool</button>
+                <button type="button" class="family-pill" data-category="Neutral">Neutral</button>
+                <button type="button" class="family-pill" data-category="Bold">Bold</button>
+              </div>
+            </div>
+
+            <!-- Wall Application Mode (All Walls vs Accent Feature Wall) -->
+            <div class="control-group">
+              <label class="control-label"><i class="fa-solid fa-layer-group"></i> Wall Mode:</label>
+              <div class="pill-group" id="wall-mode-pill-group">
+                <button type="button" class="wall-mode-pill active" data-wall-mode="all" id="mode-all-walls-btn">
+                  <i class="fa-solid fa-border-all"></i> All Walls
+                </button>
+                <button type="button" class="wall-mode-pill" data-wall-mode="accent" id="mode-accent-wall-btn">
+                  <i class="fa-solid fa-paintbrush"></i> Accent Wall
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dual Swatch Selection Bar (Active when Accent Wall mode enabled) -->
+          <div class="dual-swatch-bar luxury-card hidden mt-4" id="dual-swatch-bar">
+            <div class="dual-bar-info">
+              <span class="dual-bar-badge"><i class="fa-solid fa-palette"></i> Dual-Tone Scheme</span>
+              <h4>Select which surface to recolor:</h4>
+            </div>
+            <div class="dual-chips-wrap">
+              <button type="button" class="swatch-target-chip active" id="target-main-btn" data-target="main">
+                <span class="target-chip-dot" id="target-main-dot" style="background-color: #74608F;"></span>
+                <div class="target-chip-text">
+                  <span class="target-role">Surrounding Walls</span>
+                  <span class="target-name" id="target-main-name">Royal Lavender (#74608F)</span>
+                </div>
+              </button>
+              <div class="dual-connector"><i class="fa-solid fa-plus"></i></div>
+              <button type="button" class="swatch-target-chip" id="target-accent-btn" data-target="accent">
+                <span class="target-chip-dot" id="target-accent-dot" style="background-color: #E9D9E9;"></span>
+                <div class="target-chip-text">
+                  <span class="target-role">Feature Accent Wall</span>
+                  <span class="target-name" id="target-accent-name">Blush Pink (#E9D9E9)</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Physics Floating Anti-Gravity Visualizer Tray -->
+          <div class="antigravity-tray-card luxury-card mt-6">
+            <div class="tray-header">
+              <div class="tray-title-group">
+                <div class="tray-badge">
+                  <i class="fa-solid fa-atom"></i> Interactive Physics
+                </div>
+                <h3>Anti-Gravity Paint Swatch Visualizer</h3>
+                <p>Move your cursor over the tray to interact with zero-gravity floating shades. Click any orb to instantly lock into your palette.</p>
+              </div>
+              <div class="tray-physics-controls">
+                <button type="button" class="btn-micro" id="reset-gravity-btn" title="Re-scatter swatches">
+                  <i class="fa-solid fa-shuffle"></i> Scatter
+                </button>
+                <button type="button" class="btn-micro" id="pulse-gravity-btn" title="Magnetic Pulse">
+                  <i class="fa-solid fa-magnet"></i> Attract
+                </button>
+              </div>
+            </div>
+
+            <!-- Matter.js Canvas Container -->
+            <div class="antigravity-canvas-wrapper" id="matter-canvas-container">
+              <canvas id="matter-canvas"></canvas>
+              <div class="canvas-hint-pill">
+                <i class="fa-regular fa-hand-pointer"></i> Swatches float with zero gravity. Hover or click to select!
+              </div>
+            </div>
+          </div>
+
+          <!-- Curated Palettes & Custom Hex Picker Grid -->
+          <div class="palette-selection-grid mt-6">
+            <!-- Left: Curated Palettes -->
+            <div class="curated-palettes-card luxury-card">
+              <div class="card-header-sub">
+                <h3>Curated Architectural Palettes</h3>
+                <p>Formulated by interior lighting specialists.</p>
+              </div>
+
+              <div class="curated-palette-collections" id="curated-palette-list">
+                <!-- Palette collection 1: Lavender Dream -->
+                <div class="palette-collection active" data-palette-id="lavender-dream">
+                  <div class="collection-header">
+                    <h4>Lavender Dream • Signature Collection</h4>
+                    <span class="collection-mood-tag">Luxury</span>
+                  </div>
+                  <div class="swatches-row">
+                    <div class="palette-swatch-item active" data-hex="#74608F" data-name="Royal Lavender" data-lrv="28" style="background-color: #74608F;" title="Royal Lavender (#74608F)">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#B7A1CF" data-name="Soft Lilac" data-lrv="52" style="background-color: #B7A1CF;" title="Soft Lilac (#B7A1CF)">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#D9B8CE" data-name="Dusty Rose" data-lrv="61" style="background-color: #D9B8CE;" title="Dusty Rose (#D9B8CE)">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#E9D9E9" data-name="Blush Pink" data-lrv="78" style="background-color: #E9D9E9;" title="Blush Pink (#E9D9E9)">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#C3A77D" data-name="Soft Gold Accent" data-lrv="47" style="background-color: #C3A77D;" title="Soft Gold Accent (#C3A77D)">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Palette collection 2: Nordic Tranquility -->
+                <div class="palette-collection" data-palette-id="nordic-tranquility">
+                  <div class="collection-header">
+                    <h4>Nordic Tranquility</h4>
+                    <span class="collection-mood-tag">Calm</span>
+                  </div>
+                  <div class="swatches-row">
+                    <div class="palette-swatch-item" data-hex="#5E6F74" data-name="Fjord Slate" data-lrv="25" style="background-color: #5E6F74;" title="Fjord Slate">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#98A8A9" data-name="Morning Mist" data-lrv="49" style="background-color: #98A8A9;" title="Morning Mist">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#C7D1D0" data-name="Glacier Silk" data-lrv="68" style="background-color: #C7D1D0;" title="Glacier Silk">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#EBF0EF" data-name="Arctic Chalk" data-lrv="88" style="background-color: #EBF0EF;" title="Arctic Chalk">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Palette collection 3: Emerald Estate -->
+                <div class="palette-collection" data-palette-id="emerald-estate">
+                  <div class="collection-header">
+                    <h4>Emerald Estate & Forest Hues</h4>
+                    <span class="collection-mood-tag">Modern</span>
+                  </div>
+                  <div class="swatches-row">
+                    <div class="palette-swatch-item" data-hex="#283E38" data-name="Imperial Emerald" data-lrv="14" style="background-color: #283E38;" title="Imperial Emerald">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#4A655C" data-name="Deep Sage" data-lrv="31" style="background-color: #4A655C;" title="Deep Sage">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#8FA59B" data-name="Eucalyptus Mist" data-lrv="55" style="background-color: #8FA59B;" title="Eucalyptus Mist">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                    <div class="palette-swatch-item" data-hex="#DCE4DF" data-name="Pale Lichen" data-lrv="80" style="background-color: #DCE4DF;" title="Pale Lichen">
+                      <span class="swatch-check"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Custom Shade Studio & Current Active Color Card -->
+            <div class="custom-color-card luxury-card">
+              <div class="card-header-sub">
+                <h3>Custom Paint Matcher</h3>
+                <p>Input bespoke paint manufacturer codes or pick freely.</p>
+              </div>
+
+              <!-- Active Color Big Preview -->
+              <div class="active-color-display">
+                <div class="active-color-swatch-preview" id="active-swatch-preview" style="background-color: #74608F;">
+                  <span class="finish-sheen-preview sheen-eggshell"></span>
+                </div>
+                <div class="active-color-metadata">
+                  <h4 id="active-color-name">Royal Lavender</h4>
+                  <div class="active-color-tags">
+                    <span class="spec-pill" id="active-color-hex">#74608F</span>
+                    <span class="spec-pill" id="active-color-rgb">RGB: 116, 96, 143</span>
+                    <span class="spec-pill" id="active-color-lrv">LRV: 28%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom Picker Form -->
+              <div class="custom-picker-controls mt-4">
+                <div class="input-with-color">
+                  <input type="color" id="native-color-picker" value="#74608F" class="color-picker-input">
+                  <div class="hex-input-group">
+                    <span class="hex-prefix">#</span>
+                    <input type="text" id="hex-text-input" value="74608F" maxlength="6" class="hex-field" placeholder="74608F">
+                  </div>
+                </div>
+
+                <!-- Paint Finish Selector -->
+                <div class="finish-selector-group mt-4">
+                  <label class="picker-label"><i class="fa-solid fa-brush"></i> Architectural Paint Sheen / Finish:</label>
+                  <div class="finish-pills" id="finish-pills">
+                    <button type="button" class="finish-pill" data-finish="Matte">Matte</button>
+                    <button type="button" class="finish-pill active" data-finish="Eggshell">Eggshell</button>
+                    <button type="button" class="finish-pill" data-finish="Satin">Satin</button>
+                    <button type="button" class="finish-pill" data-finish="Semi-Gloss">Semi-Gloss</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Navigation Back & Forward -->
+              <div class="step-nav-actions mt-6">
+                <button type="button" class="btn-luxury-secondary" id="back-to-step1-btn">
+                  <i class="fa-solid fa-arrow-left"></i> Change Room
+                </button>
+                <button type="button" class="btn-luxury-primary" id="proceed-to-visualizer-btn">
+                  <span>Generate AI Preview</span>
+                  <i class="fa-solid fa-wand-sparkles"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 3: AI ROOM VISUALIZER & LIGHTING SIMULATOR ================= -->
+        <div class="studio-step-panel hidden" id="step-panel-3">
+          
+          <!-- Mode Notice Banner -->
+          <div class="engine-status-banner luxury-card" id="engine-status-banner">
+            <div class="engine-badge-wrap">
+              <span class="badge-status-dot pulse"></span>
+              <span class="engine-badge-title" id="engine-mode-title">Architectural Precision Shading</span>
+            </div>
+            <div class="engine-mode-description">
+              <span id="engine-mode-desc">Preserving natural lighting, crown moldings, and textures with edge-luminosity technology.</span>
+              <span class="engine-status-verified"><i class="fa-solid fa-shield-halved"></i> Calibrated Delta-E &lt; 1.0</span>
+            </div>
+          </div>
+
+          <!-- Main Visualizer Grid -->
+          <div class="visualizer-grid mt-5">
+            
+            <!-- Left & Center: Canvas Comparison Stage -->
+            <div class="comparison-stage-card luxury-card">
+              
+              <!-- Toolbar atop canvas -->
+              <div class="stage-toolbar">
+                <div class="toolbar-left">
+                  <div class="room-indicator-pill">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span id="visualizer-room-name">Nordic Living Salon</span>
+                  </div>
+                  <div class="active-shade-pill" id="visualizer-shade-pill">
+                    <span class="dot-chip" id="viz-chip" style="background-color: #74608F;"></span>
+                    <span id="viz-shade-name">Royal Lavender (#74608F)</span>
+                  </div>
+                </div>
+
+                <div class="toolbar-right">
+                  <!-- Split View / Side by Side Toggle -->
+                  <div class="view-mode-toggle" id="view-mode-toggle">
+                    <button type="button" class="mode-toggle-btn active" data-mode="slider" id="btn-mode-slider" title="Draggable Comparison Slider">
+                      <i class="fa-solid fa-arrows-left-right"></i> Slider
+                    </button>
+                    <button type="button" class="mode-toggle-btn" data-mode="side-by-side" id="btn-mode-side" title="Side-by-Side Comparison">
+                      <i class="fa-solid fa-table-columns"></i> Side-by-Side
+                    </button>
+                  </div>
+
+                  <!-- Paint Estimator & Budget Calculator Trigger -->
+                  <button type="button" class="btn-micro" id="open-calculator-btn" title="Open Paint Estimator & Budget Calculator">
+                    <i class="fa-solid fa-calculator"></i> Paint Estimator
+                  </button>
+
+                  <!-- Fullscreen or Reset Zoom -->
+                  <button type="button" class="btn-micro" id="reset-view-btn" title="Reset View">
+                    <i class="fa-solid fa-maximize"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Draggable Comparison Viewport -->
+              <div class="comparison-viewport" id="comparison-viewport">
+                
+                <!-- Underneath: After/Generated Recolor Layer -->
+                <div class="canvas-layer canvas-layer-after" id="layer-after">
+                  <!-- Dynamic Render Canvas -->
+                  <canvas id="recolor-canvas" class="recolor-render-canvas"></canvas>
+                  
+                  <!-- Lighting Tint Overlay Filter (Simulates Sun/Warm/Studio Kelvin) -->
+                  <div class="lighting-overlay-filter light-morning" id="lighting-filter-overlay"></div>
+                  
+                  <div class="viewport-tag after-tag">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 
+                    <span id="after-tag-label">Royal Lavender Recolor</span>
+                  </div>
+                </div>
+
+                <!-- Top: Before/Original Layer (Clipped by slider handle) -->
+                <div class="canvas-layer canvas-layer-before" id="layer-before">
+                  <img src="assets/presets/room_living_before.svg" alt="Original Room" class="original-room-img" id="original-room-img">
+                  <div class="viewport-tag before-tag">Original Wall Paint</div>
+                </div>
+
+                <!-- Draggable Split Divider Line & Handle -->
+                <div class="split-divider" id="split-divider">
+                  <div class="split-handle" id="split-handle" tabindex="0" role="slider" aria-label="Comparison Slider" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                    <i class="fa-solid fa-arrows-left-right"></i>
+                  </div>
+                </div>
+
+                <!-- Side by Side Layout Container (Alternative mode) -->
+                <div class="side-by-side-container hidden" id="side-by-side-container">
+                  <div class="side-column">
+                    <div class="side-label">Original Room</div>
+                    <img src="assets/presets/room_living_before.svg" alt="Original Room" class="side-img" id="side-before-img">
+                  </div>
+                  <div class="side-column">
+                    <div class="side-label">Wallora AI Recolor</div>
+                    <canvas id="side-recolor-canvas" class="side-img"></canvas>
+                  </div>
+                </div>
+
+                <!-- Generating Progress Loader Overlay -->
+                <div class="generation-loader-overlay hidden" id="generation-loader">
+                  <div class="loader-card luxury-card">
+                    <div class="loader-spinner-ring">
+                      <div class="ring-core"></div>
+                    </div>
+                    <h3 class="loader-title">Wallora AI Inpainting Engine</h3>
+                    <p class="loader-step-text" id="loader-step-text">Analyzing room geometry & wall masks...</p>
+                    <div class="progress-bar-track">
+                      <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    </div>
+                    <div class="loader-metrics">
+                      <span>Lighting Calibration: 5500K</span>
+                      <span id="loader-percentage">45%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lighting Simulation Controller Bar -->
+              <div class="lighting-simulator-bar">
+                <div class="lighting-bar-title">
+                  <i class="fa-solid fa-sun"></i>
+                  <span>Architectural Lighting Simulator:</span>
+                </div>
+                <div class="lighting-modes" id="lighting-mode-buttons">
+                  <button type="button" class="lighting-mode-btn active" data-light="morning">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                    <div class="light-btn-info">
+                      <span class="light-name">Morning Sun</span>
+                      <span class="light-temp">5,500K Daylight</span>
+                    </div>
+                  </button>
+                  <button type="button" class="lighting-mode-btn" data-light="evening">
+                    <i class="fa-solid fa-sunset"></i>
+                    <div class="light-btn-info">
+                      <span class="light-name">Warm Evening</span>
+                      <span class="light-temp">2,700K Golden Glow</span>
+                    </div>
+                  </button>
+                  <button type="button" class="lighting-mode-btn" data-light="neutral">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <div class="light-btn-info">
+                      <span class="light-name">Studio Neutral</span>
+                      <span class="light-temp">4,000K Balanced CRI 98</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Shade Matcher & Architectural Details Card -->
+            <div class="shade-details-column">
+              <!-- Luxury Specs Card -->
+              <div class="luxury-card shade-details-card">
+                <div class="card-header-sub">
+                  <span class="luxury-tag">Architectural Grade</span>
+                  <h3>Shade Specifications</h3>
+                </div>
+
+                <!-- High-End Swatch Presentation Card -->
+                <div class="luxury-swatch-spec-box">
+                  <div class="spec-swatch-sample" id="detail-swatch-sample" style="background-color: #74608F;">
+                    <div class="spec-sheen-label" id="detail-sheen-label">Eggshell Finish</div>
+                  </div>
+                  <div class="spec-main-info">
+                    <h4 class="spec-color-title" id="detail-color-title">Royal Lavender</h4>
+                    <span class="spec-formula-code" id="detail-formula-code">WL-7460-ROYAL</span>
+                  </div>
+                </div>
+
+                <!-- Technical Metric Table -->
+                <div class="spec-metrics-grid">
+                  <div class="metric-box">
+                    <span class="metric-key">HEX CODE</span>
+                    <span class="metric-val" id="spec-val-hex">#74608F</span>
+                  </div>
+                  <div class="metric-box">
+                    <span class="metric-key">RGB PROFILE</span>
+                    <span class="metric-val" id="spec-val-rgb">116, 96, 143</span>
+                  </div>
+                  <div class="metric-box">
+                    <span class="metric-key">LRV RATING</span>
+                    <span class="metric-val highlight-gold" id="spec-val-lrv">28% (Medium)</span>
+                  </div>
+                  <div class="metric-box">
+                    <span class="metric-key">UNDERTONE</span>
+                    <span class="metric-val" id="spec-val-undertone">Cool Plum</span>
+                  </div>
+                </div>
+
+                <!-- Designer Recommendation Box -->
+                <div class="designer-tips-box mt-4">
+                  <div class="tips-header">
+                    <i class="fa-solid fa-compass-drafting"></i>
+                    <span>Interior Trim & Hardware Pairing:</span>
+                  </div>
+                  <div class="pairings-list">
+                    <div class="pairing-item">
+                      <span class="pairing-dot" style="background-color: #E9D9E9;"></span>
+                      <span class="pairing-name">Molding & Baseboard:</span>
+                      <strong class="pairing-code">Blush Pink / Off-White</strong>
+                    </div>
+                    <div class="pairing-item">
+                      <span class="pairing-dot" style="background-color: #C3A77D;"></span>
+                      <span class="pairing-name">Accent Fixtures:</span>
+                      <strong class="pairing-code">Brushed Soft Gold / Brass</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Real Paint Manufacturer Equivalents -->
+                <div class="real-brands-box mt-4">
+                  <div class="tips-header">
+                    <i class="fa-solid fa-barcode"></i>
+                    <span>Commercial Paint Manufacturer Matches:</span>
+                  </div>
+                  <div class="brands-grid">
+                    <div class="brand-item">
+                      <span class="brand-company">Sherwin-Williams</span>
+                      <strong class="brand-code" id="brand-sw-code">SW 6544 Soulmate</strong>
+                    </div>
+                    <div class="brand-item">
+                      <span class="brand-company">Benjamin Moore</span>
+                      <strong class="brand-code" id="brand-bm-code">BM 1406 Lavender Mist</strong>
+                    </div>
+                    <div class="brand-item">
+                      <span class="brand-company">Dulux Heritage</span>
+                      <strong class="brand-code" id="brand-dulux-code">30RB 16/144</strong>
+                    </div>
+                    <div class="brand-item">
+                      <span class="brand-company">Farrow & Ball</span>
+                      <strong class="brand-code" id="brand-fb-code">No. 270 Calluna</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Button Stack -->
+                <div class="action-stack mt-5">
+                  <button type="button" class="btn-luxury-primary w-full" id="save-design-btn">
+                    <i class="fa-regular fa-bookmark"></i>
+                    <span>Save to My Designs</span>
+                  </button>
+
+                  <button type="button" class="btn-luxury-secondary w-full mt-2" id="download-preview-btn">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download Design Deck (PNG)</span>
+                  </button>
+
+                  <button type="button" class="btn-luxury-secondary w-full mt-2" id="export-pdf-btn">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Printable Client Spec Sheet (PDF)</span>
+                  </button>
+
+                  <div class="sub-actions-row mt-3">
+                    <button type="button" class="btn-ghost" id="regenerate-btn" title="Re-simulate wall shading">
+                      <i class="fa-solid fa-arrows-rotate"></i> Re-Render
+                    </button>
+                    <button type="button" class="btn-ghost" id="try-another-color-btn" title="Back to color picker">
+                      <i class="fa-solid fa-swatchbook"></i> Change Shade
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: COLOR LIBRARY ==================== -->
+    <section id="view-library" class="app-view">
+      <div class="container library-container">
+        <div class="section-header text-center">
+          <span class="section-tag">Curated Archive</span>
+          <h2 class="section-title">Architectural Color Library</h2>
+          <p class="section-subtitle">Browse through 24+ curated luxury wall paints formulated for high-end residential interiors.</p>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <div class="library-filter-card luxury-card">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="library-search-input" class="search-input" placeholder="Search by color name, HEX code (#74608F), or mood...">
+          </div>
+
+          <div class="filter-pills-row mt-4">
+            <div class="filter-subgroup">
+              <span class="filter-label">Mood:</span>
+              <button type="button" class="lib-mood-pill active" data-filter-mood="all">All</button>
+              <button type="button" class="lib-mood-pill" data-filter-mood="Luxury">Luxury</button>
+              <button type="button" class="lib-mood-pill" data-filter-mood="Calm">Calm</button>
+              <button type="button" class="lib-mood-pill" data-filter-mood="Cozy">Cozy</button>
+              <button type="button" class="lib-mood-pill" data-filter-mood="Modern">Modern</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Library Swatches Grid -->
+        <div class="library-grid mt-6" id="library-swatches-grid">
+          <!-- Dynamically populated by script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 4: MY DESIGNS GALLERY ==================== -->
+    <section id="view-designs" class="app-view">
+      <div class="container designs-container">
+        <div class="designs-header-wrap">
+          <div>
+            <span class="section-tag">Portfolio</span>
+            <h2 class="section-title">My Saved Designs</h2>
+            <p class="section-subtitle">Your personal collection of room recoloring projects and lighting studies.</p>
+          </div>
+          <button type="button" class="btn-luxury-primary" id="designs-create-new-btn">
+            <i class="fa-solid fa-plus"></i>
+            <span>Create New Design</span>
+          </button>
+        </div>
+
+        <!-- Designs Grid Container -->
+        <div class="designs-grid mt-6" id="saved-designs-grid">
+          <!-- Saved design cards rendered here by script.js -->
+        </div>
+
+        <!-- Empty State (Shown when no saved projects) -->
+        <div class="empty-designs-card luxury-card hidden" id="empty-designs-state">
+          <div class="empty-icon-wrap">
+            <i class="fa-regular fa-folder-open"></i>
+          </div>
+          <h3>No Saved Designs Yet</h3>
+          <p>Begin your interior transformation by visualizing your first room in our Design Studio.</p>
+          <button type="button" class="btn-luxury-primary mt-4" id="empty-create-btn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Start Your First Design</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== MODALS & OVERLAYS ==================== -->
+
+  <!-- Studio Preferences Modal -->
+  <div class="modal-backdrop hidden" id="settings-modal" role="dialog" aria-modal="true">
+    <div class="modal-card luxury-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-sliders text-royal-lavender"></i>
+          <h3>Studio Preferences & Aesthetics</h3>
+        </div>
+        <button type="button" class="btn-close-modal" id="close-settings-modal-btn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Tab navigation inside preferences -->
+        <div class="settings-tabs">
+          <button type="button" class="tab-btn active" data-tab="display-pref">Display & Lighting</button>
+          <button type="button" class="tab-btn" data-tab="audio-pref">Spatial Audio</button>
+          <button type="button" class="tab-btn" data-tab="units-pref">Units & Specs</button>
+          <button type="button" class="tab-btn" data-tab="about">About Studio</button>
+        </div>
+
+        <!-- Panel 1: Display & Lighting -->
+        <div class="settings-tab-panel active" id="tab-panel-display-pref">
+          <div class="setting-field">
+            <label class="setting-label">Rendering Mode:</label>
+            <select id="pref-render-quality" class="setting-select">
+              <option value="high" selected>Calibrated Ultra-High Fidelity (Retina 8K)</option>
+              <option value="balanced">Performance Optimized (Balanced)</option>
+            </select>
+            <p class="field-hint">Ensures exact color space fidelity (sRGB / DCI-P3) and natural wall texture preservation.</p>
+          </div>
+
+          <div class="setting-field mt-4">
+            <label class="setting-label">Comparison Split Divider Theme:</label>
+            <select id="pref-slider-theme" class="setting-select">
+              <option value="gold" selected>Brushed Soft Gold Trim (Default)</option>
+              <option value="lavender">Royal Lavender Minimalist</option>
+              <option value="white">Pure White High-Contrast</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Panel 2: Spatial Audio & Haptics -->
+        <div class="settings-tab-panel hidden" id="tab-panel-audio-pref">
+          <div class="setting-field">
+            <label class="setting-label">Spatial Crystal Chimes:</label>
+            <select id="pref-sound-select" class="setting-select">
+              <option value="enabled" selected>Enabled (Subtle Crystalline Sine Chimes)</option>
+              <option value="disabled">Muted (Silent Mode)</option>
+            </select>
+            <p class="field-hint">Plays a soft, calming harmonic chime when interacting with zero-gravity swatches.</p>
+          </div>
+        </div>
+
+        <!-- Panel 3: Units & Measurement -->
+        <div class="settings-tab-panel hidden" id="tab-panel-units-pref">
+          <div class="setting-field">
+            <label class="setting-label">Architectural Measurement System:</label>
+            <select id="pref-units-select" class="setting-select">
+              <option value="imperial" selected>Imperial (Feet, Sq Ft, Gallons)</option>
+              <option value="metric">Metric (Meters, Sq Meters, Liters)</option>
+            </select>
+            <p class="field-hint">Adapts the Paint Estimator and architectural printable spec sheet.</p>
+          </div>
+        </div>
+
+        <!-- Panel 4: About & Privacy -->
+        <div class="settings-tab-panel hidden" id="tab-panel-about">
+          <div class="about-spec-list">
+            <div><strong>Product:</strong> Wallora AI — Architectural Room Wall Paint Visualizer</div>
+            <div><strong>Design Identity:</strong> Lavender Dream Edition</div>
+            <div><strong>Security & Privacy:</strong> No personal photographs are stored publicly. Edge processing maintains complete confidentiality.</div>
+            <div><strong>Color Calibration:</strong> CIE 1931 Luminance LRV Standards</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-luxury-primary" id="save-settings-btn">Save Preferences</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename Design Modal -->
+  <div class="modal-backdrop hidden" id="rename-modal" role="dialog" aria-modal="true">
+    <div class="modal-card luxury-card max-w-md">
+      <div class="modal-header">
+        <h3>Rename Design Project</h3>
+        <button type="button" class="btn-close-modal" id="close-rename-modal-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="setting-label">Project Title:</label>
+        <input type="text" id="rename-input" class="setting-input" placeholder="Enter title...">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" id="cancel-rename-btn">Cancel</button>
+        <button type="button" class="btn-luxury-primary" id="confirm-rename-btn">Save Title</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop hidden" id="delete-modal" role="dialog" aria-modal="true">
+    <div class="modal-card luxury-card max-w-md">
+      <div class="modal-header">
+        <h3 class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Delete Project</h3>
+        <button type="button" class="btn-close-modal" id="close-delete-modal-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to permanently remove <strong id="delete-project-title">this design</strong>? This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" id="cancel-delete-btn">Cancel</button>
+        <button type="button" class="btn-danger" id="confirm-delete-btn">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paint & Budget Calculator Modal -->
+  <div class="modal-backdrop hidden" id="calculator-modal" role="dialog" aria-modal="true">
+    <div class="modal-card luxury-card max-w-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-calculator text-royal-lavender"></i>
+          <h3>Architectural Paint & Budget Estimator</h3>
+        </div>
+        <button type="button" class="btn-close-modal" id="close-calculator-modal-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="field-hint mb-4">Calculates exact paint volume and materials cost for your room architecture based on 2 coats and standard door/window deductions.</p>
+        
+        <div class="calc-input-grid">
+          <div class="calc-field">
+            <label class="setting-label">Room Length (ft):</label>
+            <input type="number" id="calc-length" class="setting-input" value="14" min="1" step="0.5">
+          </div>
+          <div class="calc-field">
+            <label class="setting-label">Room Width (ft):</label>
+            <input type="number" id="calc-width" class="setting-input" value="12" min="1" step="0.5">
+          </div>
+          <div class="calc-field">
+            <label class="setting-label">Ceiling Height (ft):</label>
+            <input type="number" id="calc-height" class="setting-input" value="9" min="1" step="0.5">
+          </div>
+          <div class="calc-field">
+            <label class="setting-label">Number of Coats:</label>
+            <select id="calc-coats" class="setting-select">
+              <option value="1">1 Refresh / Primer Coat</option>
+              <option value="2" selected>2 Standard Full Coverage Coats</option>
+              <option value="3">3 Deep Saturation Coats</option>
+            </select>
+          </div>
+          <div class="calc-field">
+            <label class="setting-label">Doors & Openings Deduction:</label>
+            <select id="calc-openings" class="setting-select">
+              <option value="0.10">Minimal (1 Door / 1 Window)</option>
+              <option value="0.15" selected>Standard (1 Door / 2 Windows - 15%)</option>
+              <option value="0.25">Expansive (French Glazing / Balcony - 25%)</option>
+            </select>
+          </div>
+          <div class="calc-field">
+            <label class="setting-label">Est. Price / Gallon ($):</label>
+            <input type="number" id="calc-price" class="setting-input" value="65" min="1">
+          </div>
+        </div>
+
+        <!-- Live Calculation Output Results -->
+        <div class="calc-results-card mt-5">
+          <div class="calc-result-row">
+            <span class="calc-res-label">Gross Wall Area:</span>
+            <strong class="calc-res-val" id="calc-gross-area">468 sq ft (43.5 m²)</strong>
+          </div>
+          <div class="calc-result-row">
+            <span class="calc-res-label">Net Paintable Surface:</span>
+            <strong class="calc-res-val" id="calc-net-area">398 sq ft (37.0 m²)</strong>
+          </div>
+          <div class="calc-result-divider"></div>
+          <div class="calc-result-highlight">
+            <div class="highlight-item">
+              <span class="hl-num" id="calc-gallons">2.3 Gallons</span>
+              <span class="hl-sub" id="calc-liters">(~8.7 Liters)</span>
+            </div>
+            <div class="highlight-item text-right">
+              <span class="hl-num text-soft-gold" id="calc-budget">$149.50</span>
+              <span class="hl-sub">Estimated Paint Budget</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-luxury-secondary" id="apply-calc-btn">Save to Specification</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Client Architectural Spec Sheet Template (Hidden during screen view, visible on window.print()) -->
+  <div class="print-only-spec-sheet" id="print-spec-sheet">
+    <div class="print-header">
+      <div class="print-brand">
+        <h2>WALLORA AI</h2>
+        <span>ARCHITECTURAL INTERIOR SPECIFICATION DECK</span>
+      </div>
+      <div class="print-meta-right">
+        <div><strong>Project:</strong> <span id="print-project-name">Nordic Living Salon</span></div>
+        <div><strong>Date:</strong> <span id="print-date"></span></div>
+        <div><strong>Design Direction:</strong> Lavender Dream</div>
+      </div>
+    </div>
+
+    <div class="print-body">
+      <div class="print-images-grid">
+        <div class="print-img-box">
+          <div class="print-img-caption">ORIGINAL ROOM ARCHITECTURE</div>
+          <img src="" id="print-before-img" alt="Original Room">
+        </div>
+        <div class="print-img-box">
+          <div class="print-img-caption">WALLORA AI RECOLORED SPECIFICATION</div>
+          <img src="" id="print-after-img" alt="Recolored Room">
+        </div>
+      </div>
+
+      <div class="print-specs-section">
+        <h3>ARCHITECTURAL PAINT SPECIFICATIONS</h3>
+        <table class="print-table">
+          <thead>
+            <tr>
+              <th>Surface</th>
+              <th>Shade Name</th>
+              <th>HEX Code</th>
+              <th>LRV Rating</th>
+              <th>Sheen Finish</th>
+              <th>Sherwin-Williams</th>
+              <th>Benjamin Moore</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Main / Feature Wall</strong></td>
+              <td id="print-shade-name">Royal Lavender</td>
+              <td id="print-hex-code">#74608F</td>
+              <td id="print-lrv-val">28%</td>
+              <td id="print-sheen-val">Eggshell</td>
+              <td id="print-sw-val">SW 6544</td>
+              <td id="print-bm-val">BM 1406</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="print-estimator-section">
+        <h3>SURFACE AREA & MATERIAL REQUIREMENTS</h3>
+        <div class="print-estimator-grid">
+          <div><strong>Net Wall Area:</strong> <span id="print-net-area">398 sq ft</span></div>
+          <div><strong>Coats Required:</strong> <span id="print-coats">2 Full Coats</span></div>
+          <div><strong>Estimated Volume:</strong> <span id="print-volume">2.3 Gallons (~8.7 Liters)</span></div>
+          <div><strong>Estimated Material Cost:</strong> <span id="print-cost">$149.50</span></div>
+        </div>
+      </div>
+
+      <div class="print-notes-section">
+        <p><strong>APPLICATION NOTICE:</strong> This specification is calibrated for architectural visualization under calibrated daylight temperatures (5500K / 2700K / 4000K). Actual physical paint batches should be test-patched with a 250ml sample pot prior to full contractor application.</p>
+      </div>
+
+      <div class="print-signature-row">
+        <div class="sign-block">
+          <div class="sign-line"></div>
+          <span>Interior Architect / Designer Signature</span>
+        </div>
+        <div class="sign-block">
+          <div class="sign-line"></div>
+          <span>Client Approval & Date</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Core JavaScript Logic -->
+  <script src="supabase-client.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="1000" height="650">
+  <defs>
+    <!-- Wall Gradient (Original Soft Ivory Wall) -->
+    <linearGradient id="wall-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E8E2D8" />
+      <stop offset="70%" stop-color="#DDD6CB" />
+      <stop offset="100%" stop-color="#D0C7BB" />
+    </linearGradient>
+
+    <!-- Side Wall Left (Perspective) -->
+    <linearGradient id="side-wall-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#BEB4A6" />
+      <stop offset="100%" stop-color="#D5CBBF" />
+    </linearGradient>
+
+    <!-- Hardwood Floor Gradient -->
+    <linearGradient id="floor-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A88B74" />
+      <stop offset="50%" stop-color="#8E715B" />
+      <stop offset="100%" stop-color="#725744" />
+    </linearGradient>
+
+    <!-- Sunlight Beam Cast -->
+    <linearGradient id="sunbeam-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF8E7" stop-opacity="0.45" />
+      <stop offset="60%" stop-color="#FFECC2" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#FFECC2" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Ceiling Gradient -->
+    <linearGradient id="ceiling-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EDE8E1" />
+      <stop offset="100%" stop-color="#FBF9F6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Ceiling -->
+  <polygon points="0,0 1000,0 850,90 150,90" fill="url(#ceiling-grad)" />
+
+  <!-- Left Perspective Wall -->
+  <polygon points="0,0 150,90 150,490 0,600" fill="url(#side-wall-grad)" />
+
+  <!-- Main Back Architectural Wall -->
+  <rect x="150" y="90" width="700" height="400" fill="url(#wall-grad)" />
+
+  <!-- Crown Molding -->
+  <rect x="150" y="90" width="700" height="12" fill="#FAF7F2" />
+  <rect x="150" y="102" width="700" height="3" fill="#D2C7B8" />
+
+  <!-- Architectural Wall Wainscoting & Panels -->
+  <!-- Left Panel -->
+  <rect x="180" y="130" width="180" height="240" fill="none" stroke="#FAF7F2" stroke-width="4" rx="2" />
+  <rect x="186" y="136" width="168" height="228" fill="none" stroke="#D3C9BD" stroke-width="2" />
+  <!-- Center Tall Window Frame -->
+  <rect x="390" y="110" width="220" height="320" fill="#E6EEF4" stroke="#FAF7F2" stroke-width="8" rx="4" />
+  <!-- Window Glass Panes & Sunlight -->
+  <line x1="500" y1="110" x2="500" y2="430" stroke="#FAF7F2" stroke-width="6" />
+  <line x1="390" y1="210" x2="610" y2="210" stroke="#FAF7F2" stroke-width="4" />
+  <line x1="390" y1="310" x2="610" y2="310" stroke="#FAF7F2" stroke-width="4" />
+  <!-- Sky & Landscape Hint through Window -->
+  <rect x="394" y="114" width="103" height="92" fill="#D2E4F0" opacity="0.8" />
+  <rect x="503" y="114" width="103" height="92" fill="#D7E8F3" opacity="0.8" />
+  <!-- Right Panel with Framed Canvas Art -->
+  <rect x="640" y="130" width="180" height="240" fill="none" stroke="#FAF7F2" stroke-width="4" rx="2" />
+  <rect x="646" y="136" width="168" height="228" fill="none" stroke="#D3C9BD" stroke-width="2" />
+  
+  <!-- Framed Minimalist Art -->
+  <rect x="670" y="160" width="120" height="170" fill="#FBF9F5" stroke="#C3A77D" stroke-width="5" rx="2" />
+  <circle cx="730" cy="235" r="38" fill="#E3D7CA" />
+  <path d="M700 255 Q 730 200 760 255" fill="none" stroke="#74608F" stroke-width="4" />
+
+  <!-- Baseboard Trim -->
+  <rect x="150" y="475" width="700" height="15" fill="#FAF7F2" />
+  <rect x="150" y="473" width="700" height="2" fill="#C2B8AA" />
+
+  <!-- Floor -->
+  <polygon points="0,600 150,490 850,490 1000,600 1000,650 0,650" fill="url(#floor-grad)" />
+
+  <!-- Perspective Planks on Floor -->
+  <line x1="150" y1="490" x2="0" y2="650" stroke="#5C4535" stroke-width="2" opacity="0.4" />
+  <line x1="300" y1="490" x2="200" y2="650" stroke="#5C4535" stroke-width="2" opacity="0.4" />
+  <line x1="450" y1="490" x2="420" y2="650" stroke="#5C4535" stroke-width="2" opacity="0.4" />
+  <line x1="600" y1="490" x2="650" y2="650" stroke="#5C4535" stroke-width="2" opacity="0.4" />
+  <line x1="750" y1="490" x2="880" y2="650" stroke="#5C4535" stroke-width="2" opacity="0.4" />
+
+  <!-- Cast Sunlight Stream -->
+  <polygon points="410,130 590,130 850,650 480,650" fill="url(#sunbeam-grad)" />
+
+  <!-- Architectural Luxury Sofa (Preserved in Foreground) -->
+  <!-- Sofa Shadow -->
+  <ellipse cx="500" cy="550" rx="280" ry="25" fill="#3B2A1E" opacity="0.45" />
+  <!-- Sofa Body -->
+  <rect x="250" y="420" width="500" height="110" rx="16" fill="#F2EFE9" stroke="#E0DCD4" stroke-width="2" />
+  <rect x="270" y="400" width="460" height="50" rx="12" fill="#EAE5DC" />
+  <!-- Cushions -->
+  <rect x="290" y="430" width="130" height="75" rx="8" fill="#F8F6F2" stroke="#DFDAD0" />
+  <rect x="435" y="430" width="130" height="75" rx="8" fill="#F8F6F2" stroke="#DFDAD0" />
+  <rect x="580" y="430" width="130" height="75" rx="8" fill="#F8F6F2" stroke="#DFDAD0" />
+  <!-- Brass Accent Sofa Legs -->
+  <rect x="275" y="525" width="10" height="25" rx="2" fill="#C3A77D" />
+  <rect x="715" y="525" width="10" height="25" rx="2" fill="#C3A77D" />
+  <rect x="495" y="525" width="10" height="25" rx="2" fill="#C3A77D" />
+
+  <!-- Designer Plant on Left -->
+  <ellipse cx="120" cy="530" rx="35" ry="10" fill="#2A1E14" opacity="0.4" />
+  <path d="M100 520 L110 470 L130 470 L140 520 Z" fill="#DED7CC" stroke="#C3A77D" stroke-width="2" />
+  <!-- Plant Fronds -->
+  <path d="M120 470 Q 80 410 60 420 Q 90 440 120 470" fill="#3D5A46" />
+  <path d="M120 470 Q 110 390 100 370 Q 125 410 120 470" fill="#4B6E56" />
+  <path d="M120 470 Q 150 400 170 390 Q 145 430 120 470" fill="#587E64" />
+
+  <!-- Designer Fluted Brass Pendant Lamp from Ceiling -->
+  <line x1="500" y1="90" x2="500" y2="170" stroke="#C3A77D" stroke-width="3" />
+  <ellipse cx="500" cy="180" rx="30" ry="12" fill="#C3A77D" />
+  <polygon points="470,180 530,180 550,210 450,210" fill="#DDCBB1" />
+  <ellipse cx="500" cy="210" rx="50" ry="10" fill="#FFF7E6" />
+  <!-- Glow from lamp -->
+  <circle cx="500" cy="215" r="28" fill="#FFF4D4" opacity="0.3" />
+</svg>
+
