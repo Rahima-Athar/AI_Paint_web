@@ -4,18 +4,12 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { getImageEditingProvider } = require('../../../src/services/imageEditingProvider');
 
+export const maxDuration = 120;
+
 export async function POST(request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const {
-      imageBufferOrUrl,
-      colorName,
-      colorHex,
-      roomType,
-      mood,
-      finish,
-      lightingMode,
-    } = body || {};
+    const { imageBufferOrUrl, colorName, colorHex, roomType, mood, finish, lightingMode } = body || {};
 
     if (!imageBufferOrUrl) {
       return NextResponse.json({ success: false, error: 'Missing required room image.' }, { status: 400 });
@@ -28,8 +22,8 @@ export async function POST(request) {
     }
 
     const providerChoice = process.env.IMAGE_EDITING_PROVIDER || 'demo';
-    const apiKey = process.env.IMAGE_EDITING_API_KEY;
-    const provider = getImageEditingProvider(providerChoice, apiKey);
+    // API key is read server-side only; never accept it from the client.
+    const provider = getImageEditingProvider(providerChoice, process.env.IMAGE_EDITING_API_KEY);
 
     const result = await provider.generateWallRecolor({
       imageBufferOrUrl,
@@ -41,16 +35,16 @@ export async function POST(request) {
       lightingMode: lightingMode || 'morning',
     });
 
-    return NextResponse.json({ success: true, variant: result });
+    return NextResponse.json({ success: true, variant: result, provider: result.provider, status: result.status });
   } catch (error) {
     console.error('Server Inpainting Error:', error?.message || error);
     return NextResponse.json(
-      { success: false, error: 'AI wall inpainting encountered a transient processing error.', code: 'PROVIDER_ERROR' },
+      { success: false, error: 'AI wall inpainting encountered a processing error. Demo mode remains available.', code: 'PROVIDER_ERROR' },
       { status: 500 }
     );
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: true, route: '/api/generate' });
+  return NextResponse.json({ ok: true, route: '/api/generate', provider: process.env.IMAGE_EDITING_PROVIDER || 'demo' });
 }
