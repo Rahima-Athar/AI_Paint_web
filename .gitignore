@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+build/
+
+# Local environment files (never commit secrets)
+.env
+.env*.local
+supabase-config.local.js
+public/supabase-config.local.js
+wallora.txt
+
+# Local-only project data
+profile.local.json
+paint_web.rar
+
+# Logs and OS files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/

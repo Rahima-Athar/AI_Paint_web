@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # WALLORA AI — Luxury Architectural Room Paint Visualizer
 
 > **"Your Space, Your Colors, Your Imagination."**  
@@ -83,21 +82,42 @@ Wallora AI is crafted using the bespoke **Lavender Dream** identity:
 
 ---
 
-## 3. Quick Start & Local Setup
+## 3. Quick Start (Next.js)
 
-### Option A: Double-Click or Static Serving (Zero Dependencies)
-You can directly open `index.html` in any modern web browser! All dependencies (fonts, Matter.js, Confetti) are loaded asynchronously via CDN with offline fallbacks.
+This project runs on **Next.js 14 (App Router)**.
 
-### Option B: Local Node Server
-Run the built-in zero-dependency development server:
+### Install
 ```bash
-node server.js
+npm install
 ```
-Open your browser to: **`http://localhost:3000`**
 
-### Option C: Run Automated Tests
+### Development
 ```bash
-node test.js
+npm run dev
+```
+Open **http://localhost:3000**.
+
+### Production build
+```bash
+npm run build
+npm start
+```
+
+### Next.js structure
+- `app/layout.js` — root layout, fonts, Font Awesome and metadata.
+- `app/page.js` — renders the Wallora experience.
+- `app/globals.css` — the Lavender Dream design system.
+- `components/WalloraLegacyApp.jsx` — client bootstrap that loads the visualizer engine and CDN libraries in order.
+- `components/walloraMarkup.js` — the page markup (generated from `index.html`).
+- `app/api/generate/route.js` — Next.js route handler for `POST /api/generate`.
+- `public/` — favicon, room presets, legacy runtime assets and local Supabase config.
+- `public/legacy/script.js` — the interactive visualizer engine used by the page.
+
+The original static files (`index.html`, `script.js`, `style.css`, `server.js`) are kept for reference and can be run with `npm run legacy:start`.
+
+### Automated tests
+```bash
+npm test
 ```
 
 ---
@@ -164,32 +184,29 @@ Wallora AI now supports Supabase Auth (email/password) and user profiles.
 Avatars are uploaded to the **`avatars`** storage bucket (public read). Run the avatar bucket SQL from `supabase/migrations/20261103000000_wallora_schema.sql` (section 11).
 
 ### Local Development with Secrets
-To keep secrets out of git, create a gitignored file:
+Create a gitignored `.env.local` file in the project root:
 
-`supabase-config.local.js`
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
+```
+
+`components/WalloraLegacyApp.jsx` passes these values to the legacy Supabase client at runtime. As a fallback, the optional `public/supabase-config.local.js` file can define the same values:
+
 ```js
 window.__WALLORA_SUPABASE_URL__  = 'https://YOUR_PROJECT.supabase.co';
 window.__WALLORA_SUPABASE_ANON__ = 'sb_publishable_...';
 ```
 
-The app reads these globals first, then falls back to placeholders.
+Only the Supabase **anon/publishable** key belongs in either browser-side location. Never put the service-role key in `public/` or `.env.local` values prefixed with `NEXT_PUBLIC_`.
 
 ## 8. SaaS Polish Features
 - Dark mode toggle (persisted in localStorage).
 - ARIA focus rings for keyboard navigation.
 - Empty-state illustrations.
 - Skeleton loaders for async content.
-- Service worker for offline shell caching.
 - Open Graph / Twitter meta tags.
 - Favicon.
 
 ---
 *Wallora AI — Engineered for Architectural Interior Harmony.*
-
-#   p a i n t _ w e b  
- #   A I _ P a i n t _ w e b  
- #   A I _ P a i n t _ w e b  
- 
-=======
-# AI_Paint_web
->>>>>>> 3e84c148b0154bd11f1c271bcbb8b31950c759b1
