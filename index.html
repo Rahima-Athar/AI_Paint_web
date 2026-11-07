@@ -114,14 +114,26 @@
         </button>
 
         <!-- Mobile Menu Toggle -->
-        <button type="button" class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Navigation">
+        <button type="button" class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Navigation" aria-expanded="false" aria-controls="mobile-drawer">
           <i class="fa-solid fa-bars-staggered"></i>
         </button>
       </div>
     </div>
 
+    <!-- Mobile Drawer Backdrop -->
+    <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
+
     <!-- Mobile Drawer Navigation -->
-    <div class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer" id="mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+      <div class="drawer-header">
+        <div class="drawer-brand">
+          <span class="drawer-brand-name">WALLORA<span class="brand-accent">AI</span></span>
+          <span class="drawer-brand-sub">Lavender Dream Edition</span>
+        </div>
+        <button type="button" class="drawer-close-btn" id="mobile-drawer-close" aria-label="Close navigation menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
       <div class="drawer-content">
         <button type="button" class="drawer-link active" data-view="landing">
           <i class="fa-solid fa-compass"></i> Discover
@@ -133,15 +145,26 @@
           <i class="fa-solid fa-palette"></i> Color Library
         </button>
         <button type="button" class="drawer-link" data-view="designs">
-          <i class="fa-solid fa-bookmark"></i> My Designs
+          <i class="fa-solid fa-bookmark"></i>
+          <span>My Saved Designs</span>
+          <span class="badge-count" id="drawer-saved-count">0</span>
         </button>
         <button type="button" class="drawer-link" data-view="statistics">
           <i class="fa-solid fa-chart-line"></i> Statistics
         </button>
 
+        <button type="button" class="drawer-link" id="drawer-profile-btn" data-view="profile">
+          <i class="fa-solid fa-user"></i> Profile & Account
+        </button>
         <button type="button" class="drawer-link" id="mobile-settings-btn">
           <i class="fa-solid fa-sliders"></i> System Settings & API
         </button>
+        <div class="drawer-cta-wrap">
+          <button type="button" class="btn-luxury-primary w-full" id="drawer-start-visualizing-btn">
+            <span>Visualize My Room</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -1887,6 +1910,35 @@
     </div>
   </div>
 
+
+  <!-- ==================== MOBILE BOTTOM NAVIGATION ==================== -->
+  <nav class="mobile-bottom-bar" id="mobile-bottom-bar" aria-label="Mobile Navigation">
+    <button type="button" class="bottom-nav-item active" data-view="landing" id="bottom-nav-landing" aria-label="Discover">
+      <i class="fa-solid fa-compass"></i>
+      <span>Discover</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-view="library" id="bottom-nav-library" aria-label="Color Library">
+      <i class="fa-solid fa-palette"></i>
+      <span>Colors</span>
+    </button>
+    <button type="button" class="bottom-nav-item bottom-fab-item" data-view="studio" id="bottom-nav-studio" aria-label="Design Studio">
+      <div class="fab-circle">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      </div>
+      <span>Studio</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-view="designs" id="bottom-nav-designs" aria-label="My Designs">
+      <div class="bottom-badge-wrap">
+        <i class="fa-solid fa-bookmark"></i>
+        <span class="badge-count bottom-badge" id="bottom-saved-count">0</span>
+      </div>
+      <span>Saved</span>
+    </button>
+    <button type="button" class="bottom-nav-item" id="bottom-nav-more" aria-label="Open Navigation Menu">
+      <i class="fa-solid fa-bars"></i>
+      <span>Menu</span>
+    </button>
+  </nav>
 
   <!-- Toast Notification Container -->
   <div class="toast-container" id="toast-container" aria-live="polite"></div>

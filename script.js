@@ -288,15 +288,23 @@
 
   function cacheDOMElements() {
     // Navigation
-    DOM.navLinks = document.querySelectorAll('.nav-link, .drawer-link, .footer-link');
+    DOM.navLinks = document.querySelectorAll('.nav-link, .drawer-link, .footer-link, .bottom-nav-item');
     DOM.desktopNav = document.getElementById('desktop-nav');
     DOM.mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     DOM.mobileDrawer = document.getElementById('mobile-drawer');
+    DOM.mobileDrawerBackdrop = document.getElementById('mobile-drawer-backdrop');
+    DOM.mobileDrawerClose = document.getElementById('mobile-drawer-close');
+    DOM.mobileBottomBar = document.getElementById('mobile-bottom-bar');
+    DOM.drawerStartVisualizingBtn = document.getElementById('drawer-start-visualizing-btn');
+    DOM.drawerProfileBtn = document.getElementById('drawer-profile-btn');
+    DOM.bottomNavMore = document.getElementById('bottom-nav-more');
     DOM.navBrandBtn = document.getElementById('nav-brand-btn');
     DOM.startVisualizingBtn = document.getElementById('start-visualizing-btn');
     DOM.heroCtaBtn = document.getElementById('hero-cta-btn');
     DOM.heroBrowsePalettes = document.getElementById('hero-browse-palettes');
     DOM.navSavedCount = document.getElementById('nav-saved-count');
+    DOM.drawerSavedCount = document.getElementById('drawer-saved-count');
+    DOM.bottomSavedCount = document.getElementById('bottom-saved-count');
     DOM.openSettingsBtn = document.getElementById('open-settings-btn');
     DOM.mobileSettingsBtn = document.getElementById('mobile-settings-btn');
     DOM.soundToggleBtn = document.getElementById('sound-toggle-btn');
@@ -572,6 +580,37 @@
     if (DOM.profileBioInput && profile.bio !== undefined) DOM.profileBioInput.value = profile.bio || '';
   }
 
+  function openMobileMenu() {
+    if (!DOM.mobileDrawer) return;
+    DOM.mobileDrawer.classList.add('open');
+    if (DOM.mobileDrawerBackdrop) DOM.mobileDrawerBackdrop.classList.add('open');
+    if (DOM.mobileMenuToggle) {
+      DOM.mobileMenuToggle.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      DOM.mobileMenuToggle.setAttribute('aria-expanded', 'true');
+    }
+    document.body.classList.add('mobile-drawer-open');
+  }
+
+  function closeMobileMenu() {
+    if (!DOM.mobileDrawer) return;
+    DOM.mobileDrawer.classList.remove('open');
+    if (DOM.mobileDrawerBackdrop) DOM.mobileDrawerBackdrop.classList.remove('open');
+    if (DOM.mobileMenuToggle) {
+      DOM.mobileMenuToggle.innerHTML = '<i class="fa-solid fa-bars-staggered"></i>';
+      DOM.mobileMenuToggle.setAttribute('aria-expanded', 'false');
+    }
+    document.body.classList.remove('mobile-drawer-open');
+  }
+
+  function toggleMobileMenu() {
+    if (!DOM.mobileDrawer) return;
+    if (DOM.mobileDrawer.classList.contains('open')) {
+      closeMobileMenu();
+    } else {
+      openMobileMenu();
+    }
+  }
+
   function setView(viewName) {
     if (!DOM.views[viewName]) viewName = 'landing';
 
@@ -584,12 +623,12 @@
       else DOM.views[key].classList.remove('active-view');
     });
 
-    document.querySelectorAll('.nav-link, .drawer-link').forEach(link => {
+    document.querySelectorAll('.nav-link, .drawer-link, .bottom-nav-item').forEach(link => {
       if (link.getAttribute('data-view') === viewName) link.classList.add('active');
       else link.classList.remove('active');
     });
 
-    if (DOM.mobileDrawer) DOM.mobileDrawer.style.display = 'none';
+    closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (viewName === 'statistics') {
@@ -1757,19 +1796,38 @@
     updateSavedCountBadge();
   }
 
-  function saveDesignsToStorage() {
-    try {
-      localStorage.setItem('wallora_saved_designs_v1', JSON.stringify(state.savedDesigns));
-    } catch (e) {
+  function safeLocalStorageSet(key, value) {
+    try { localStorage.setItem(key, value); return { ok: true }; }
+    catch (e) {
+      const quota = e && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.code === 22);
+      if (quota) {
+        try {
+          const designs = JSON.parse(value || '[]');
+          const compact = designs.map(d => ({ ...d, thumbSrc: (d.thumbSrc && d.thumbSrc.startsWith('data:') && d.thumbSrc.length > 120000) ? (state.roomImageSrc || 'assets/presets/room_living_after.svg') : d.thumbSrc }));
+          localStorage.setItem(key, JSON.stringify(compact));
+          if (typeof showToast === 'function') showToast('Storage was full; saved designs with compact thumbnails.', 'info');
+          return { ok: true, compact: true };
+        } catch (e2) {
+          console.error('LocalStorage quota recovery failed:', e2);
+          if (typeof showToast === 'function') showToast('Browser storage is full. Some local data may not persist; sign in to sync to cloud.', 'error');
+          return { ok: false, error: e2 };
+        }
+      }
       console.warn('Could not write to localStorage', e);
+      return { ok: false, error: e };
     }
+  }
+
+  function saveDesignsToStorage() {
+    safeLocalStorageSet('wallora_saved_designs_v1', JSON.stringify(state.savedDesigns));
     updateSavedCountBadge();
   }
 
   function updateSavedCountBadge() {
-    if (DOM.navSavedCount) {
-      DOM.navSavedCount.textContent = state.savedDesigns.length;
-    }
+    const count = (state.savedDesigns && state.savedDesigns.length) || 0;
+    if (DOM.navSavedCount) DOM.navSavedCount.textContent = count;
+    if (DOM.drawerSavedCount) DOM.drawerSavedCount.textContent = count;
+    if (DOM.bottomSavedCount) DOM.bottomSavedCount.textContent = count;
   }
 
   function saveCurrentDesign() {
@@ -2277,9 +2335,10 @@
 
       const mapped = data.map(p => {
         const v = (p.design_variants && p.design_variants[0]) || {};
-        const color = findColorByHex(v.primary_color_hex || '#74608F');
+        const color = findColorByHex(v.color_hex || v.primary_color_hex || '#74608F');
         return {
           id: p.id,
+          _dbId: p.id,
           title: p.title || 'Untitled Design',
           roomType: p.room_type || 'Living Room',
           roomName: p.title || 'Untitled Design',
@@ -2287,8 +2346,9 @@
           finish: v.finish || 'Eggshell',
           lighting: v.lighting_mode || 'morning',
           date: p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          createdAt: p.created_at || null,
           isFavorite: !!v.is_favorite,
-          thumbSrc: 'assets/presets/room_living_after.svg',
+          thumbSrc: v.result_image_url || v.result_image_path || 'assets/presets/room_living_after.svg',
           _variantId: v.id || null
         };
       });
@@ -2645,12 +2705,18 @@
     let aiUsed = 0;
     if (db && db.client && safeUser.id !== 'local-user') {
       try {
-        const periodStart = new Date();
-        periodStart.setDate(1);
+        const periodStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const periodStr = periodStart.toISOString().slice(0, 10);
-        const { data: usage } = await db.client.from('ai_usage').select('*').eq('user_id', safeUser.id).eq('period_start', periodStr).maybeSingle();
-        aiUsed = usage?.generation_count || 0;
-      } catch (e) {}
+        if (db && db.getAiUsage) {
+          const { data: usage, error } = await db.getAiUsage(periodStr);
+          if (error && !error.missingTable) console.warn('AI usage load failed:', db.errMsg ? db.errMsg(error) : (error.message || error));
+          aiUsed = usage?.generation_count || 0;
+        } else if (db && db.client) {
+          const { data: usage, error } = await db.client.from('ai_usage').select('generation_count').eq('user_id', safeUser.id).eq('period_start', periodStr).maybeSingle();
+          if (error && !(error.message||'').toLowerCase().includes('does not exist')) console.warn('AI usage load failed:', error.message || error);
+          aiUsed = usage?.generation_count || 0;
+        }
+      } catch (e) { console.warn('AI usage load failed:', e.message || e); }
     }
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -3013,18 +3079,15 @@
         if (db && db.client && user) {
           try {
             await ensureProfile(user);
-            const base = { display_name: newName, avatar_url: newAvatar || null };
-            let { error } = await db.client.from('profiles').update(base).eq('id', user.id);
-            // Best-effort optional fields for schemas that include them.
-            if (!error && (newLocation || newBio)) {
-              const extra = await db.client.from('profiles').update({ location: newLocation || null, bio: newBio || null }).eq('id', user.id);
-              if (!extra.error) remoteStatus = 'synced';
-              else remoteStatus = 'local+remote-base';
-            } else if (!error) {
-              remoteStatus = 'synced';
+            const patch = { display_name: newName, avatar_url: newAvatar || null, location: newLocation || null, bio: newBio || null };
+            if (db.updateProfile) {
+              const { error } = await db.updateProfile(user.id, patch);
+              if (!error) remoteStatus = 'synced';
+              else if (error.partial) remoteStatus = 'local+remote-base';
+              else { remoteStatus = 'local-only'; console.warn('Profile remote save issue:', db.errMsg ? db.errMsg(error) : (error.message || error)); }
             } else {
-              remoteStatus = 'local-only';
-              console.warn('Profile remote save issue:', error.message || error);
+              const { error } = await db.client.from('profiles').update({ display_name: newName, avatar_url: newAvatar || null }).eq('id', user.id);
+              remoteStatus = error ? 'local-only' : 'synced';
             }
           } catch (e) {
             remoteStatus = 'local-only';
@@ -3207,7 +3270,7 @@
     // Rename Modal
     DOM.closeRenameModalBtn.addEventListener('click', () => DOM.renameModal.classList.add('hidden'));
     DOM.cancelRenameBtn.addEventListener('click', () => DOM.renameModal.classList.add('hidden'));
-    DOM.confirmRenameBtn.addEventListener('click', () => {
+    DOM.confirmRenameBtn.addEventListener('click', async () => {
       const newTitle = DOM.renameInput.value.trim();
       if (!newTitle) return;
       const proj = state.savedDesigns.find(p => p.id === state.projectToRenameId);
@@ -3216,6 +3279,11 @@
         saveDesignsToStorage();
         renderSavedDesigns();
         showToast('Project renamed successfully', 'success');
+        const db = window.wallora && window.wallora.db;
+        if (db && db.updateProject && proj._dbId) {
+          const { error } = await db.updateProject(proj._dbId, { title: newTitle });
+          if (error) showToast('Renamed locally, but cloud sync failed: ' + (db.errMsg ? db.errMsg(error) : (error.message || error)), 'error');
+        }
       }
       DOM.renameModal.classList.add('hidden');
     });
@@ -3223,18 +3291,20 @@
     // Delete Modal
     DOM.closeDeleteModalBtn.addEventListener('click', () => DOM.deleteModal.classList.add('hidden'));
     DOM.cancelDeleteBtn.addEventListener('click', () => DOM.deleteModal.classList.add('hidden'));
-    DOM.confirmDeleteBtn.addEventListener('click', () => {
+    DOM.confirmDeleteBtn.addEventListener('click', async () => {
       const deletedId = state.projectToDeleteId;
+      const deleted = state.savedDesigns.find(p => p.id === deletedId);
       state.savedDesigns = state.savedDesigns.filter(p => p.id !== deletedId);
       saveDesignsToStorage();
       renderSavedDesigns();
       refreshProfileUI();
       DOM.deleteModal.classList.add('hidden');
-      showToast('Project removed permanently', 'info');
-
+      showToast('Project removed', 'info');
       const db = window.wallora && window.wallora.db;
-      if (db && db.client && deletedId) {
-        db.deleteProject(deletedId).catch(() => {});
+      const cloudId = deleted && (deleted._dbId || (!String(deletedId).startsWith('proj-') ? deletedId : null));
+      if (db && db.deleteProject && cloudId) {
+        const { error } = await db.deleteProject(cloudId);
+        if (error) showToast('Removed locally, but cloud delete failed: ' + (db.errMsg ? db.errMsg(error) : (error.message || error)), 'error');
       }
     });
 
@@ -3310,11 +3380,62 @@
     });
 
     if (DOM.mobileMenuToggle) {
-      DOM.mobileMenuToggle.addEventListener('click', () => {
-        const isShown = DOM.mobileDrawer.style.display === 'block';
-        DOM.mobileDrawer.style.display = isShown ? 'none' : 'block';
+      DOM.mobileMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMobileMenu();
       });
     }
+
+    if (DOM.mobileDrawerClose) {
+      DOM.mobileDrawerClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeMobileMenu();
+      });
+    }
+
+    if (DOM.mobileDrawerBackdrop) {
+      DOM.mobileDrawerBackdrop.addEventListener('click', () => {
+        closeMobileMenu();
+      });
+    }
+
+    if (DOM.bottomNavMore) {
+      DOM.bottomNavMore.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMobileMenu();
+      });
+    }
+
+    if (DOM.drawerStartVisualizingBtn) {
+      DOM.drawerStartVisualizingBtn.addEventListener('click', () => {
+        closeMobileMenu();
+        setView('studio');
+      });
+    }
+
+    if (DOM.drawerProfileBtn) {
+      DOM.drawerProfileBtn.addEventListener('click', () => {
+        closeMobileMenu();
+        setView('profile');
+      });
+    }
+
+    // Debounced window resize handler for responsive fluid layout & canvas adjustment
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (window.innerWidth > 992) {
+          closeMobileMenu();
+        }
+        if (state.view === 'studio' && DOM.matterCanvas) {
+          const container = DOM.matterCanvas.parentElement;
+          if (container && container.clientWidth) {
+            DOM.matterCanvas.width = container.clientWidth;
+          }
+        }
+      }, 150);
+    }, { passive: true });
 
     document.querySelectorAll('.apply-swatch-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -3435,9 +3556,13 @@
       setView('landing');
     }
 
-    // Register service worker (offline shell) if supported
+    // The legacy offline-shell service worker conflicts with Next.js routing
+    // and cached the old static build. Remove it if a previous visit installed it.
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+        .catch(() => {});
     }
 
     console.log('✨ Wallora AI — Enhanced Luxury Engine initialized with Dual-Tone & Audio.');
